@@ -90,7 +90,7 @@
                         <plugin>
                                 <groupId>org.sonarsource.scanner.maven</groupId>
                                 <artifactId>sonar-maven-plugin</artifactId>
-                                <version>4.2.1.3168</version>
+                                <version>25.6.0.109173</version>
                         </plugin>
 
 			<plugin>
