@@ -12,7 +12,7 @@
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<sonar.host.url>http://13.234.110.18:9000/</sonar.host.url>
+		<sonar.host.url>http://13.127.35.25:9000/</sonar.host.url>
 		<sonar.token>squ_83eeff224b8a60d75c63586b792e6d171af94308</sonar.token>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -25,11 +25,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://35.154.225.62:8081/repository/praveentech-release/</url>
+			<url>http://15.206.27.55:8081/repository/praveentech-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://35.154.225.62:8081/repository/praveentech_snapshot/</url>
+			<url>http://15.206.27.55:8081/repository/praveentech_snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
