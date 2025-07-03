@@ -25,11 +25,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://13.57.13.23:8081/repository/rushitech-release/</url>
+			<url>http://43.204.24.254:8081/repository/DhanuDevopsWorld-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://13.57.13.23:8081/repository/rushitech-snapshot/</url>
+			<url>http://43.204.24.254:8081/repository/DhanuDevopsWorld-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
