@@ -32,11 +32,6 @@
 		<snapshotRepository>
 			<id>nexus</id>
 			<url>http://15.206.27.55:8081/repository/praveentech_snapshot/</url>
-			<url>http://13.57.13.23:8081/repository/student-reg-webapp/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://13.57.13.23:8081/repository/student-reg-appp-snapshots/</url>
 		</snapshotRepository>
     </distributionManagement>
 
