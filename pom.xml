@@ -9,7 +9,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<sonar.host.url>http://13.201.13.62:9000/</sonar.host.url>
