@@ -72,6 +72,7 @@ node {
     """
 
     sendEmail(subject, htmlBody, 'praveen.kumar23346@gmail.com')
+  }
 }
 
 
