@@ -9,7 +9,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<sonar.host.url>http://13.201.13.62:9000/</sonar.host.url>
@@ -29,7 +29,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://15.206.27.55:8080/repository/praveentech_snapshot/</url>
+			<url>http://15.206.27.55:8081/repository/praveentech_snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
