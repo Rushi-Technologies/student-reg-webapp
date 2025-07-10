@@ -29,7 +29,7 @@
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://15.206.27.55:8081/repository/praveentech_snapshot/</url>
+			<url>http://15.206.27.55:8080/repository/praveentech_snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
