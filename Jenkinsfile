@@ -4,8 +4,9 @@ node {
         echo "Git clone"
         git branch: 'development', credentialsId: 'GitHubCred', url: 'https://github.com/PraveenKumar-Devops/student-reg-webapp.git'
     }
-    stage("maven build with sonar") {
-            sh "${mavenHome}/bin/mvn clean verify sonar:sonar"
+    stage("maven verify And Sonar Scan") {
+        sh "${mavenHome}/bin/mvn clean package"
+        sh "${mavenHome}/bin/mvn clean verify sonar:sonar"
     }
 
     stage("maven deploy") {
