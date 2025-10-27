@@ -12,7 +12,7 @@
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<sonar.host.url>http://172.31.28.213:9000/</sonar.host.url>
+		<sonar.host.url>http://172.31.30.241:9000/</sonar.host.url>
 		<sonar.token>sqa_c0d4eec9206ce64ee9c63531832118467e17fd12</sonar.token>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
