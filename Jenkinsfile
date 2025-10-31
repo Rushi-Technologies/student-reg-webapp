@@ -46,7 +46,8 @@ pipeline {
             }
             stage ("Deploy Artifact to nexus") {
                 steps{
-                    sh"mvn clean deploy"
+                    sh"mvn clean deploy" 
+                    sh "echo "deploy to nexus""
                 }
             }
             stage ("DEPLOY TO TOMCAT") {
