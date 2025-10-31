@@ -13,7 +13,6 @@ pipeline {
     environment {
         GIT_BRANCH = ''
         GIT_CREDENTIALS = ''
-        GIT_URL = ""
         SONARQUBE_TOKEN = ""
         TOMCAT_IP_ADDRESS = "18.212.79.240"
         TOMCAT_USER_NAME = "ec2-user"
