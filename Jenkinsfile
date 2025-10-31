@@ -51,7 +51,7 @@ pipeline {
             }
             stage ("DEPLOY TO TOMCAT") {
                 steps{
-                    when ("env.BRANCH_NAME == main"){ 
+                    when (env.BRANCH_NAME == "main"){ 
 
                     sshagent(['SSH-to-tomcatserver']) {
                         sh """
