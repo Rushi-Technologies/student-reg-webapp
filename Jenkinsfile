@@ -51,8 +51,9 @@ pipeline {
             }
             stage ("DEPLOY TO TOMCAT") {
                 steps{
-                    when (env.BRANCH_NAME == "main"){ 
-
+                    when {
+                       expression { (env.BRANCH_NAME == "main") }
+                    }
                     sshagent(['SSH-to-tomcatserver']) {
                         sh """
                         ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "sudo systemctl stop tomcat"
@@ -63,7 +64,7 @@ pipeline {
                         """
    
                         }
-                    }
+                    
                 }
             }
             
