@@ -50,25 +50,31 @@ pipeline {
                     sh "echo 'deploy to nexus'"
                 }
             }
-            stage ("DEPLOY TO TOMCAT") {
-                steps{
-                    when {
-                       expression { (env.BRANCH_NAME == "main") }
-                    }
-                    sshagent(['SSH-to-tomcatserver']) {
-                        sh """
-                        ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "sudo systemctl stop tomcat"
-                        sleep 25
-                        ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "rm /opt/tomcat/webapps/student-reg-webapp.war" || true
-                        scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS}:/opt/tomcat/webapps/student-reg-webapp.war
-                        ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "sudo systemctl start tomcat"
-                        """
-   
+            stage("DEPLOY TO TOMCAT") {
+                when {
+                    expression { env.BRANCH_NAME == "main" }
+                }
+                    steps {
+                        sshagent(['SSH-to-tomcatserver']) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "sudo systemctl stop tomcat"
+                            sleep 25
+                            ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "rm /opt/tomcat/webapps/student-reg-webapp.war" || true
+                            scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS}:/opt/tomcat/webapps/student-reg-webapp.war
+                            ssh -o StrictHostKeyChecking=no ${TOMCAT_USER_NAME}@${TOMCAT_IP_ADDRESS} "sudo systemctl start tomcat"
+                            """
                         }
-                    
+                    }
+            }
+            stage("SKIP DEPLOYMENT") {
+                when {
+                    expression { env.BRANCH_NAME != "main" }
+                }
+                steps {
+                    echo "This is not the main branch. Skipping deployment."
                 }
             }
-            
+   
             
         }
     post {
