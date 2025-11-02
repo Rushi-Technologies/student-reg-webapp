@@ -84,11 +84,14 @@ pipeline {
         }
         success {
             
+            Script{
             sendemail()
-                 
+            }    
     }
         failure{
+            Script{
            sendemail()
+            }
     }
     }
 
