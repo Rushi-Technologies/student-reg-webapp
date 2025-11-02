@@ -88,7 +88,7 @@ pipeline {
             sendemail()
             }    
     }
-    
+
         failure{
             Script{
            sendemail()
