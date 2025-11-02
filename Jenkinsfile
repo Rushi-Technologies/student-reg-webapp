@@ -32,7 +32,7 @@ pipeline {
             }
             stage("Maven build tool"){
                 steps{
-                    sh " mvn clean package "
+                    mavenaction( 'package' )
                 }   
             }
             stage ("SonarQube") {
@@ -79,21 +79,11 @@ pipeline {
             
         }
         post {
-        always{
-             cleanWs()
-        }
-        success {
-            
-            Script{
-            sendemail()
-            }    
-    }
-
-        failure{
-            Script{
-           sendemail()
+            always{
+                sendemail(currentBuild.currentResult,"devopsmanu1909@gmail.com")
+                cleanWs()
             }
-    }
+       
     }
 
 }
