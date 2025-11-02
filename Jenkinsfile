@@ -83,6 +83,7 @@ pipeline {
              cleanWs()
         }
         success {
+<<<<<<< HEAD
             Script{
             sendemail()
             }
@@ -92,6 +93,18 @@ pipeline {
            sendemail()
             }
         }
+=======
+            
+            Script{
+            sendemail()
+            }    
+    }
+        failure{
+            Script{
+           sendemail()
+            }
+    }
+>>>>>>> 11d64b93b886da8c93b4bf1ea01de38533cf246b
     }
 
 }
