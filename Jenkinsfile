@@ -83,13 +83,15 @@ pipeline {
              cleanWs()
         }
         success {
-            
+            Script{
             sendemail()
-                 
+            }
     }
         failure{
+            Script {
            sendemail()
-    }
+            }
+        }
     }
 
 }
