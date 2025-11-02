@@ -1,3 +1,4 @@
+@Library('JenkinsSharedLib')
 pipeline {
     agent any 
     tools {
@@ -77,30 +78,18 @@ pipeline {
    
             
         }
-    post {
+        post {
         always{
              cleanWs()
         }
         success {
-             sendEmail(
-                "${env.JOB_NAME} - ${env.BUILD_NUMBER} - Build SUCCESS",
-                "Build SUCCESS. Please check the console output at ${env.BUILD_URL}", 'devopsmanu1909@gmail.com'
-                 )
+            
+            sendemail()
+                 
     }
         failure{
-            sendEmail(
-                "${env.JOB_NAME} - ${env.BUILD_NUMBER} - Build FAILED",
-                "Build FAILED. Please check the console output at ${env.BUILD_URL}",'devopsmanu1909@gmail.com'
-                 )
+           sendemail()
     }
     }
 
-}
-def sendEmail(String subject, String body, String recipient) {
-    emailext(
-        subject: subject,
-        body: body,
-        to: recipient,
-        mimeType: 'text/html'
-    )
 }
