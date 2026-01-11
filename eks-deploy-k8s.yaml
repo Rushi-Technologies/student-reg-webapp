@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sutdent-reg-webapp
+  namespace: test-ns
+spec:
+  selector:
+    matchLabels:
+      app: studentregweabapp
+  template:
+    metadata:
+      labels:
+        app: studentregweabapp
+    spec:
+      containers:
+      - name: studentregweabapp
+        image: 621402808084.dkr.ecr.us-east-2.amazonaws.com/ecr/newrepo:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        livenessProbe:
+          httpGet:
+            path: /student-reg-webapp/
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /student-reg-webapp/
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5  
