@@ -1,0 +1,80 @@
+pipeline {
+    
+    agent any
+    
+    environment {
+       DOCKER_REGISTRY="rushitechnologiesbalaji"
+       DOCKER_REPO="student-reg-webapp"
+       DOCKER_REGISTRY_USER="rushitechnologiesbalaji"
+    }
+   
+    options {
+      buildDiscarder logRotator(numToKeepStr: '5')
+      timeout(time: 10, unit: 'MINUTES')
+      disableConcurrentBuilds()
+    }
+
+    
+    tools {
+        maven 'Maven-3.9.10'
+    }
+
+    stages {
+        stage('Git CheckOut') {
+            steps {
+               git branch: 'development', credentialsId: 'GitHubCred', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
+            }
+        }
+        
+       stage("Run Unit Tests"){
+           steps {
+               sh "mvn clean test"
+           }
+       } 
+
+      stage("Maven Clean Package"){
+           steps {
+               sh "mvn clean package"
+           }
+       }
+
+       stage("Docker Build"){
+           steps {
+               script {
+                   sh "docker build -t ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_NUMBER} ."
+               }
+           }
+       }
+
+       stage("Scan Docker Image for Vulnerabilities"){
+           steps {
+               script {
+                   sh """
+                          mkdir -p /var/lib/jenkins/trivy-cache
+                          export TRIVY_CACHE_DIR=/var/lib/jenkins/trivy-cache
+                          export TMPDIR=/var/lib/jenkins/trivy-cache
+                          trivy image --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_NUMBER}
+                        """
+               }
+           }
+       }
+
+       stage("Push Docker Image") {
+           steps {
+             withCredentials([string(credentialsId: 'Docker_Hub_Password', variable: 'DockerHubPassword')]) {
+                sh "docker login -u ${env.DOCKER_REGISTRY_USER} -p ${DockerHubPassword}"
+            }
+            sh "docker push ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_NUMBER}"
+           }
+       }
+       
+      stage("Deployt to Docker Server"){
+           steps {
+               sshagent(['Docker_Dev_Server']) {
+                   sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.1.150  docker rm -f student-reg-webapp || true"
+                   sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.1.150  docker run -d --name student-reg-webapp -p 8080:8080 ${env.DOCKER_REGISTRY}/${env.DOCKER_REPO}:${env.BUILD_NUMBER}"
+               }
+           }
+       }  
+    }
+}
