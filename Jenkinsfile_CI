@@ -1,0 +1,108 @@
+pipeline {
+    
+    agent any
+    
+    triggers {
+       githubPush()
+    }
+
+
+    options {
+      buildDiscarder logRotator(numToKeepStr: '5')
+      timeout(time: 10, unit: 'MINUTES')
+      disableConcurrentBuilds()
+    }
+    
+    environment {
+        IMAGE_REGISTRY_ENDPOINT = "775694652978.dkr.ecr.ap-south-1.amazonaws.com"
+        IMAGE_REPOSITORY_NAME = "student-reg-webapp"
+        IMAGE_REGISTRY = "${IMAGE_REGISTRY_ENDPOINT}/${IMAGE_REPOSITORY_NAME}"
+    }
+    
+    tools {
+        maven 'Maven-3.9.10'
+    }
+
+    stages {
+        stage('Git CheckOut') {
+            steps {
+               git branch: 'development', credentialsId: 'GitHubCred', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
+            }
+        }
+        
+       stage("Run Unit Tests"){
+           steps {
+               sh "mvn clean test"
+           }
+       } 
+
+      stage("Maven Clean Package"){
+           steps {
+               sh "mvn clean package"
+           }
+       }
+       
+       stage("Build Docker Image"){
+             steps {
+                 sh "docker build -t ${IMAGE_REGISTRY}:$BUILD_NUMBER ."
+             }
+       }
+       stage("Push Docker Image to ECR"){
+             steps {
+                     sh """
+                         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${IMAGE_REGISTRY_ENDPOINT}
+                         docker push ${IMAGE_REGISTRY}:$BUILD_NUMBER
+                     """
+             }
+         }
+
+         stage('Update image tag in OPS repo (K8s)') {
+        steps {
+            withCredentials([usernamePassword(
+            credentialsId: 'GitHubCred',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+            )]) {
+                
+                 sh '''
+                    set -e
+
+                    OPS_DIR="ops-repo"
+                    OPS_REPO="https://${GIT_USER}:${GIT_TOKEN}@github.com/Rushi-Technologies/student-reg-webapp-gitops.git"
+
+                    rm -rf "$OPS_DIR"
+                    git clone "$OPS_REPO" "$OPS_DIR"
+                ''' 
+
+                dir('ops-repo') {
+                    sh '''
+                    set -e
+
+                    FILE="k8s_files/deployment.yaml"
+                    sed -i "s|image: \\(.*student-reg-webapp:\\).*|image: \\1${BUILD_NUMBER}|" $FILE
+
+                    git config user.email "jenkins@localhost"
+                    git config user.name "jenkins"
+
+                    if git diff --quiet; then
+                        echo "No changes detected"
+                        exit 0
+                    fi
+
+                    git add "$FILE"
+                    git commit -m "ci(helm): bump image tag to ${BUILD_NUMBER}"
+                    git push origin main
+                    '''
+                }  
+              
+            }
+        }
+    }
+ }
+  post{
+        always {
+            sh 'docker system prune -af'
+              cleanWs()
+        }
+    }
+}

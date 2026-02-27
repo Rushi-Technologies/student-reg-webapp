@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+
+    triggers {
+       githubPush()
+     }
+
+    options {
+      buildDiscarder logRotator(numToKeepStr: '5')
+      timeout(time: 10, unit: 'MINUTES')
+      disableConcurrentBuilds()
+    }
+    
+    environment {
+        AWS_REGION = "ap-south-1"
+        EKS_CLUSTER_NAME = "eks-demo"
+        IMAGE_REGISTRY_ENDPOINT = "775694652978.dkr.ecr.ap-south-1.amazonaws.com"
+        IMAGE_REPOSITORY_NAME = "student-reg-webapp"
+        IMAGE_REGISTRY = "${IMAGE_REGISTRY_ENDPOINT}/${IMAGE_REPOSITORY_NAME}"
+    }
+
+    tools {
+        maven 'Maven-3.9.10'
+    }
+
+    stages {
+
+      stage("Checkout Code"){
+           steps {
+               git branch: 'development', credentialsId: 'GitHubCred', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
+           }
+       }
+
+      stage("Run Unit Tests"){
+           steps {
+               sh "mvn clean test"
+           }
+       } 
+
+
+
+      stage("Maven Clean Package"){
+           steps {
+               sh "mvn clean package"
+           }
+       }
+
+
+        stage("Build Docker Image"){
+             steps {
+                 sh "docker build -t ${IMAGE_REGISTRY}:$BUILD_NUMBER ."
+             }
+         }
+         
+
+        stage("Update Image Tag in K8s Manifset"){
+            steps {
+               sh """
+                   sed -i "s/IMAGE_TAG/$BUILD_NUMBER/g" k8s_resources/deployment.yaml
+               """
+            }
+        }
+        
+        stage("Push Docker Image to ECR"){
+             steps {
+                     sh """
+                         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${IMAGE_REGISTRY_ENDPOINT}
+                         docker push ${IMAGE_REGISTRY}:$BUILD_NUMBER
+                     """
+             }
+         }
+         
+         stage("Deploy to Kubernetes"){
+             steps {
+                 sh """
+                     aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER_NAME}
+                     kubectl apply -f k8s_resources/
+                 """
+             }
+         }
+       
+    }
+       
+}

@@ -9,12 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Controller
 public class HomeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     public static List<RegistrationForm> REGISTRATIONS = new ArrayList<>();
 
@@ -49,6 +53,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String showForm(Model model, HttpServletRequest request) {
+
+        logger.info("Rendering registration form for client IP: {}", request.getRemoteAddr());
         model.addAttribute("form", new RegistrationForm());
         model.addAttribute("courses", getCourses());
         model.addAttribute("clientIp", request.getRemoteAddr());
@@ -61,26 +67,30 @@ public class HomeController {
                               BindingResult result,
                               Model model,
                               HttpServletRequest request) {
+        logger.info("Processing registration for email: {}", form.getEmail());
         model.addAttribute("clientIp", request.getRemoteAddr());
         model.addAttribute("serverIp", request.getLocalAddr());
         model.addAttribute("courses", getCourses());
 
         if (result.hasErrors()) {
+            logger.warn("Validation errors found for registration form. Error count: {}", result.getErrorCount());
+            logger.debug("Validation error details: {}", result.getAllErrors());
             return "registration";
         }
 
         // Mock email sending
-        System.out.println("Sending email to: " + form.getEmail());
-        System.out.println("Hello " + form.getName() + ", you selected course: " + form.getCourse());
+        logger.info("Sending email to: {}", form.getEmail());
+        logger.info("Hello {}, you selected course: {}", form.getName(), form.getCourse());
 
         model.addAttribute("name", form.getName());
         model.addAttribute("emailSent", true);
         model.addAttribute("course", form.getCourse());
         REGISTRATIONS.add(form);
+        logger.info("Registration successful for: {}", form.getName());
         return "success";
     }
 
     private List<String> getCourses() {
-        return Arrays.asList("DevOps", "AWS", "Azure", "Terraform", "Kubernetes");
+        return Arrays.asList("DevOps", "AWS", "Azure Admin With Azure DevOps", "Terraform", "K8s","GCP");
     }
 }

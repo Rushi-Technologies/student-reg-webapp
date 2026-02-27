@@ -1,0 +1,73 @@
+pipeline {
+    
+    agent any
+    
+    options {
+      buildDiscarder logRotator(numToKeepStr: '5')
+      timeout(time: 10, unit: 'MINUTES')
+      disableConcurrentBuilds()
+    }
+    
+    parameters {
+        string(name: 'TOMCAT_SERVER_IPS', defaultValue: '172.31.34.242,172.31.44.50', description: 'Comma-separated list of Tomcat server IPs')
+    }
+    
+    tools {
+        maven 'Maven-3.9.10'
+    }
+
+    stages {
+        
+        stage("Git Clone"){
+           steps {
+              git branch: 'development', credentialsId: 'GitHubCred', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'	
+           }
+       }
+       
+       stage("Maven Clean Package"){
+           steps {
+               sh "mvn clean package"
+           }
+       }
+       
+       /*
+        stage("Deploy To Dev Servers") {
+            steps {
+                //This is groovy script scripted way of for loop.
+                script {
+                    def tomcatIps = params.TOMCAT_SERVER_IPS.tokenize(',')
+                    sshagent(['Tomcat_Server']) {
+                      // This is groovy script scripted way of for loop.
+                        for (ip in tomcatIps) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ec2-user@${ip} sudo systemctl stop tomcat
+                                echo Stopping the Tomcat Process on ${ip}
+                                sleep 30
+                                scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${ip}:/opt/tomcat/webapps/student-reg-webapp.war
+                                echo Copying the War file to Tomcat Server ${ip}
+                                ssh -o StrictHostKeyChecking=no ec2-user@${ip} sudo systemctl start tomcat
+                                echo Starting the Tomcat process on ${ip}
+                            """
+                        }
+                    }
+                }
+            }
+        }*/
+        
+        /* Executing a shell script to deploy war file in tomcat servers by executing shell sccript
+           with list of tomcat ipdress as , separated values */
+        
+             stage("Deploy To Dev Servers") {
+                steps {
+                    sshagent(['Tomcat_Server']) {
+                        sh """
+                            chmod +x deploy_tomcat.sh
+                            ./deploy_tomcat.sh "${params.TOMCAT_SERVER_IPS}"
+                        """
+                    }
+                }
+            }
+            
+   }
+  
+}
