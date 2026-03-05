@@ -1,0 +1,59 @@
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '10')), disableConcurrentBuilds(), pipelineTriggers([githubPush()])])
+node {
+try{
+    def Maven_home=tool name: 'Maven-3.9.12', type: 'maven'
+    def Tomcatserverip="172.31.41.31"
+    def Tomcatusername="ec2-user"
+    stage ('Git clone'){
+        sh "echo cloning code"
+        git branch: 'main', credentialsId: 'Github_credentials', url: 'https://github.com/deepakby-123/student-reg-webapp.git'
+    }
+    stage ('Maven package') {
+        sh "echo ${Maven_home}"
+        sh "${Maven_home}/bin/mvn clean package"
+    }
+    stage ('Sonar scan') {
+        withCredentials([string(credentialsId: 'SonarQube_token', variable: 'sonartoken')]) {
+    sh "${Maven_home}/bin/mvn clean verify sonar:sonar -Dsonar.token=${sonartoken}"
+}
+    }
+    stage ('upload to nexus') {
+        sh "${Maven_home}/bin/mvn clean deploy"
+    }
+    stage ('Deploy war file to tomcat') {
+       sshagent(['Tomcat_ssh-cred']) {
+    sh """
+       ssh -o StrictHostKeyChecking=no ${Tomcatusername}@${Tomcatserverip} sudo systemctl stop tomcat
+       sleep 20
+       ssh -o StrictHostKeyChecking=no ${Tomcatusername}@${Tomcatserverip} rm -f /opt/tomcat/webapps/student-reg-webapp.war
+       scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${Tomcatusername}@${Tomcatserverip}:/opt/tomcat/webapps/student-reg-webapp.war
+       ssh -o StrictHostKeyChecking=no ${Tomcatusername}@${Tomcatserverip} sudo systemctl stop tomcat
+       """
+}
+    }
+} catch (Exception e){
+    currentBuild.result= 'FAILURE'
+} finally {
+    def Buildstatus= currentBuild.result ?: 'SUCCESS'
+    def colourcode= "good"
+    if (Buildstatus == "Failure") {
+        colourcode = 'danger'
+    }
+    slackSend channel: 'all-deepak', colour: "${colourcode}", message: "Jenkins Job ${env.JOB_NAME}-${env.BUILD_NUMBER}-${Buildstatus}-Check console output at ${env.BUILD_URL}"
+     emailext(
+    subject: "${env.JOB_NAME}-${env.BUILD_NUMBER}-${Buildstatus}",
+    to: "bydeepak6@gmail.com",
+    mimeType: "text/html",
+    body: """
+    <html>
+    <body>
+        <h2>Build Result</h2>
+        <p>Job: ${env.JOB_NAME}</p>
+        <p>Status: ${Buildstatus}</p>
+        <p><a href="${env.BUILD_URL}">Build Logs</a></p>
+    </body>
+    </html>
+    """
+)
+}
+}
