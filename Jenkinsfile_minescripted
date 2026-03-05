@@ -4,10 +4,7 @@ try{
     def Maven_home=tool name: 'Maven-3.9.12', type: 'maven'
     def Tomcatserverip="172.31.41.31"
     def Tomcatusername="ec2-user"
-    stage ('Git clone'){
-        sh "echo cloning code"
-        git branch: 'main', credentialsId: 'Github_credentials', url: 'https://github.com/deepakby-123/student-reg-webapp.git'
-    }
+    
     stage ('Maven package') {
         sh "echo ${Maven_home}"
         sh "${Maven_home}/bin/mvn clean package"
