@@ -48,7 +48,7 @@ pipeline {
         }
         stage ('Deploy to Dev') {
             when {
-                expression {env.BRANCH_NAME == "Development" || env.BRANCH_NAME == "Feature"}
+                expression {env.BRANCH_NAME == "Development"}
             }
             steps{
                 sshagent(['Tomcat_ssh-cred']) {
