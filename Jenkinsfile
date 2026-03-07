@@ -46,7 +46,10 @@ pipeline {
                 sh "mvn clean deploy"
             }
         }
-        stage ('Deploy to tomcat') {
+        stage ('Deploy to Dev') {
+            when {
+                expression {env.BRANCH_NAME == "Development" || env.BRANCH_NAME == "Feature"}
+            }
             steps{
                 sshagent(['Tomcat_ssh-cred']) {
                 sh "ssh -o StrictHostKeyChecking=no ${Tomcatusername}@${Tomcatserverip} sudo systemctl stop tomcat"
@@ -56,6 +59,15 @@ pipeline {
                 sh "ssh -o StrictHostKeyChecking=no ${Tomcatusername}@${Tomcatserverip} sudo systemctl stop tomcat"
                 }
                
+            }
+        }
+        stage ('Deploy to Prod') {
+            when {
+                branch 'main'
+            }
+            steps{
+                //Commands to Deploy Prod
+                sh "Deploying Prod "
             }
         }
     }
