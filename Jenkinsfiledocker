@@ -73,6 +73,8 @@ CI/CD Pipeline
         stage("Build Docker image"){
              agent {
                     Docker{
+                        image 'docker:latest'
+                        args '-v /var/run/docker.sock:/var/run/docker.sock'
                         }
                 } 
             steps{
@@ -90,6 +92,8 @@ CI/CD Pipeline
         stage("containerize"){
             agent {
                 Docker{ 
+                    image 'docker:latest'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
                 } 
             }          
             steps{
