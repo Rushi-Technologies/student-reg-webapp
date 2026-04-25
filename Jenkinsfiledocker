@@ -22,6 +22,16 @@ pipeline {
           }
             }
         }
+        stage('Generate Report') {
+            steps {
+                // Example: Export issues to CSV using SonarQube API
+                sh '''
+                curl -s -u $SONAR_TOKEN: http://3.82.175.120:9000/api/issues/search?componentKeys=student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
+                | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
+                '''
+                archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
+            }
+        }
     }
 }
     
