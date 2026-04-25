@@ -79,7 +79,7 @@ CI/CD Pipeline
                 steps{
                     sshagent(['DOCKER-AGENT-SSH']) {
                         sh """
-                        -o StrictHostKeyChecking=no mkdir -p ec2-user@${Docker_Host} "mkdir -p /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}" || echo "Directory already exists"
+                        ssh -o StrictHostKeyChecking=no mkdir -p ec2-user@${Docker_Host} "mkdir -p /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}" || echo "Directory already exists"
                        
                         scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || echo "File transfer failed, but continuing..."
                         sleep 20
