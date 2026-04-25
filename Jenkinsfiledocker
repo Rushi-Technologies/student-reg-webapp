@@ -31,6 +31,7 @@ pipeline {
                 '''
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
             }
+        }
         stage('Email Report') {
             steps {
                 emailext(
@@ -48,7 +49,7 @@ CI/CD Pipeline
                     to: 'devopsmanu1909@gmail.com',
                     attachmentsPattern: 'sonar_report.csv'
                         )
-                }
+                
             }
             
         }
