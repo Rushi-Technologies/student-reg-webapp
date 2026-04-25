@@ -74,17 +74,25 @@ CI/CD Pipeline
                 }
             
         }
-        stage("Build Docker image"){
-            agent { label 'docker' }
+        stage("COpy Jar file to Docker system"){
+            agent { label 'Maven' }
                 steps{
                     sshagent(['DOCKER-AGENT-SSH']) {
                         sh """
                         scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
                         sleep 20
-                        docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
-                        echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
+                        echo "Jar file copied successfully to Docker host"
                         """
                     }  
+                }
+        }
+        stage("Build Docker image"){
+            agent { label 'docker' }
+                steps{
+                    sh """
+                    docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
+                    echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
+                    """
                 }
         }
         stage("containerize"){
@@ -94,7 +102,6 @@ CI/CD Pipeline
                         sh """
                         docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
                         echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
-
                         """
                     }
             }
