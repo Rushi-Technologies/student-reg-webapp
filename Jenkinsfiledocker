@@ -7,10 +7,10 @@ pipeline {
         githubPush()
     }
     stages {
-        stage('gitClone') {
+        stage('mvn build') {
             steps {
                 // Get some code from a GitHub repository 
-                git branch: 'development', credentialsId: 'Git', url: 'https://github.com/Manoj0919/student-reg-webapp.git'
+                mvn 'clean package'
             }
 
         }
