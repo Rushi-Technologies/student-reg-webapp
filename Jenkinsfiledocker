@@ -29,10 +29,17 @@ pipeline {
                 // Example: Export issues to CSV using SonarQube API
                 withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
                 sh """
-                curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
+                # Export issues to CSV
+                curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=com.rushi:student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
                 | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
                 ls -l sonar_report.csv
                 head -n 5 sonar_report.csv || echo 'CSV is empty'
+                # Export summary metrics (bugs, vulnerabilities, code_smells, coverage)
+                curl -s -u ${SONAR_TOKEN}: "http://3.82.175.120:9000/api/measures/component?component=com.rushi:student-reg-webapp&metricKeys=bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density" \
+                | jq -r '.component.measures[] | [.metric, .value] | @csv' > sonar_summary.csv
+
+                ls -l sonar_report.csv sonar_summary.csv
+                head -n 5 sonar_summary.csv || echo 'CSV is empty'
                 """
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
                 echo "SonarQube report generated and archived"
@@ -54,7 +61,7 @@ Regards,
 CI/CD Pipeline
 """,
                     to: 'devopsmanu1909@gmail.com',
-                    attachmentsPattern: 'sonar_report.csv'
+                    attachmentsPattern: '*.csv'
                         )
                 
             }
