@@ -81,7 +81,7 @@ CI/CD Pipeline
                         sh """
                         ssh -o StrictHostKeyChecking=no ec2-user@${Docker_Host} "mkdir -p /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}" || echo "Directory creation failed, but continuing..."
 
-                        scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/docker_pipelineo ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || echo "File transfer failed, but continuing..."
+                        scp -o StrictHostKeyChecking=no -r . ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || echo "File transfer failed, but continuing..."
                         sleep 20
                         echo "Jar file copied successfully to Docker host"
                         """
