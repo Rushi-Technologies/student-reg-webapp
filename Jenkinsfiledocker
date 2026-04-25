@@ -65,7 +65,7 @@ CI/CD Pipeline
 """,
                     to: 'devopsmanu1909@gmail.com',
                     attachmentsPattern: '*.csv'
-                        )
+                     )
                 
             }
             
@@ -81,6 +81,8 @@ CI/CD Pipeline
                     """
                     }
                 }
+            }
+        }
         stage("containerize"){ 
             steps{
                 agent Docker{
@@ -91,7 +93,7 @@ CI/CD Pipeline
                     }
                 }
             }
+        
         }
     }
 }
-    
