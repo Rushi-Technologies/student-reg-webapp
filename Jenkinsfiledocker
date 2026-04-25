@@ -18,9 +18,11 @@ pipeline {
           withCredentials([string(credentialsId: 'Sonar', variable: 'Sonar')]) {
             // some block
             sh """
-            mvn test sonar:sonar -Dsoanr.token=${Sonar}]
+            mvn clean sonar:sonar -Dsoanr.token=${Sonar}]
             """
-        
+            }
+            }
         }
     }
 }
+    
