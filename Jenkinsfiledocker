@@ -6,7 +6,7 @@ pipeline {
     triggers{
         githubpush()
     }
-    enevironments{
+    evironments{
     }
     stages {
         stage('gitClone') {
