@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
     tools {
       maven 'Maven-3.9.15'
     }
@@ -11,49 +11,52 @@ pipeline {
     }
     stages {
         stage('mvn build') {
-            steps {
-                // Get some code from a GitHub repository 
-               sh" mvn clean package "
-               echo "mvn build successful"
+            agent { label 'Maven' }
+                steps {
+                    // Get some code from a GitHub repository 
+                sh" mvn clean package "
+                echo "mvn build successful"
+                }
             }
-        }
-        stage('Code Quality') {
-            steps {
-          withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
-            sh """
-            mvn test sonar:sonar -Dsonar.token=${SONAR_TOKEN}
-            """
-            echo "Code quality analysis completed"
-          }
+            stage('Code Quality') {
+                steps {
+            withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
+                sh """
+                mvn test sonar:sonar -Dsonar.token=${SONAR_TOKEN}
+                """
+                echo "Code quality analysis completed"
             }
+                }
         }
         stage('Generate Report') {
-            steps {
-                // Example: Export issues to CSV using SonarQube API
-                withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
-                sh """
-                # Export issues to CSV
-                curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=com.rushi:student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
-                | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
-                ls -l sonar_report.csv
-                head -n 5 sonar_report.csv || echo 'CSV is empty'
-                # Export summary metrics (bugs, vulnerabilities, code_smells, coverage)
-                curl -s -u ${SONAR_TOKEN}: "http://3.82.175.120:9000/api/measures/component?component=com.rushi:student-reg-webapp&metricKeys=bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density" \
-                | jq -r '.component.measures[] | [.metric, .value] | @csv' > sonar_summary.csv
+            agent { label 'Maven' }
+                steps {
+                    // Example: Export issues to CSV using SonarQube API
+                    withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                    # Export issues to CSV
+                    curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=com.rushi:student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
+                    | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
+                    ls -l sonar_report.csv
+                    head -n 5 sonar_report.csv || echo 'CSV is empty'
+                    # Export summary metrics (bugs, vulnerabilities, code_smells, coverage)
+                    curl -s -u ${SONAR_TOKEN}: "http://3.82.175.120:9000/api/measures/component?component=com.rushi:student-reg-webapp&metricKeys=bugs,vulnerabilities,code_smells,coverage,duplicated_lines_density" \
+                    | jq -r '.component.measures[] | [.metric, .value] | @csv' > sonar_summary.csv
 
-                ls -l sonar_report.csv sonar_summary.csv
-                head -n 5 sonar_summary.csv || echo 'CSV is empty'
-                """
-                archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
-                echo "SonarQube report generated and archived"
-                }
+                    ls -l sonar_report.csv sonar_summary.csv
+                    head -n 5 sonar_summary.csv || echo 'CSV is empty'
+                    """
+                    archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
+                    echo "SonarQube report generated and archived"
+                    }
             }
         }
         stage('Email Report') {
-            steps {
-                emailext(
-                    subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                    body: """Hello Team,
+            agent { label 'Maven' }
+                steps {
+                    emailext(
+                        subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        body: """Hello Team,
 
 Attached is the SonarQube analysis report for build #${env.BUILD_NUMBER}.
 Key metrics:
@@ -71,31 +74,21 @@ CI/CD Pipeline
             
         }
         stage("Build Docker image"){
-             agent {
-                Docker{
-                    image 'docker:latest'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
-                    }
-                } 
-            steps{
-                sshagent(['DOCKER-AGENT-SSH']) {
-                    sh """
-                    scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
-                    sleep 20
-                    docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
-                    echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
-                    """
-                }  
+            agent { label 'docker' }
+                steps{
+                    sshagent(['DOCKER-AGENT-SSH']) {
+                        sh """
+                        scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
+                        sleep 20
+                        docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
+                        echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
+                        """
+                    }  
             }
         }
         
         stage("containerize"){
-            agent {
-                Docker{ 
-                    image 'docker:latest'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
-                } 
-            }          
+            agent { label 'docker' }        
             steps{
                 shagent(['DOCKER-AGENT-SSH']) {
                     sh """
