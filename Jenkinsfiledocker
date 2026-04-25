@@ -15,9 +15,9 @@ pipeline {
         }
         stage('Code Quality') {
             steps {
-          withCredentials([string(credentialsId: 'Sonar_token', variable: 'Sonar')]) {
+          withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
             sh """
-            mvn clean test -X sonar:sonar -Dsonar.token=""${Sonar}""
+            mvn clean sonar:sonar -Dsonar.token=""${SONAR_TOKEN}""
             """
           }
             }
@@ -25,11 +25,13 @@ pipeline {
         stage('Generate Report') {
             steps {
                 // Example: Export issues to CSV using SonarQube API
-                sh '''
-                curl -s -u $SONAR_TOKEN: http://3.82.175.120:9000/api/issues/search?componentKeys=student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
+                withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
+                sh """
+                curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
                 | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
-                '''
+                """
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
+                }
             }
         }
         stage('Email Report') {
