@@ -17,7 +17,7 @@ pipeline {
             steps {
           
             sh """
-            mvn clean test -X sonar:sonar -Dsonar.token=withCredentials([string(credentialsId: 'Sonar_token', variable: 'Sonar')])
+            mvn clean test -X sonar:sonar -Dsonar.token=sqa_22d4040fe1bc4f7d6ffcf5bb258267617541a5c4
             """
             
             }
