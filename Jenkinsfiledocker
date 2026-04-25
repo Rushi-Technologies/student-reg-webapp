@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    tools {
+        maven "Maven-3.9.15"
+    }
+    triggers{
+        githubpush()
+    }
+    stages {
+        stage('gitClone') {
+            steps {
+                // Get some code from a GitHub repository
+                git branch: 'development', credentialsId: 'Git', url: 'https://github.com/Manoj0919/student-reg-webapp.git'
+            }
+
+        }
+    }
+}
