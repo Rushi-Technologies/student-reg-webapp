@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Code Quality') {
             steps {
-          withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
+            withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]){
             sh """
             mvn clean sonar:sonar -Dsonar.token=""${SONAR_TOKEN}""
             """
