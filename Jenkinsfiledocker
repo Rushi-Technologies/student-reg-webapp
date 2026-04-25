@@ -32,10 +32,10 @@ pipeline {
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
             }
         stage('Email Report') {
-                    steps {
-                        emailext(
-                            subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                            body: """Hello Team,
+            steps {
+                emailext(
+                    subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                    body: """Hello Team,
 
         Attached is the SonarQube analysis report for build #${env.BUILD_NUMBER}.
 
