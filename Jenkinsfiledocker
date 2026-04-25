@@ -12,7 +12,15 @@ pipeline {
                 // Get some code from a GitHub repository 
                sh" mvn clean package "
             }
-
+        }
+        stage('Code Quality') {
+            steps {
+          withCredentials([string(credentialsId: 'Sonar', variable: 'Sonar')]) {
+            // some block
+            sh """
+            mvn test sonar:sonar -Dsoanr.token=${Sonar}]
+            """
+        
         }
     }
 }
