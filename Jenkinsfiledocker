@@ -31,6 +31,8 @@ pipeline {
                 sh """
                 curl -s -u ${SONAR_TOKEN}: http://3.82.175.120:9000/api/issues/search?componentKeys=student-reg-webapp&types=BUG,VULNERABILITY,CODE_SMELL \
                 | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sonar_report.csv
+                ls -l sonar_report.csv
+                head -n 5 sonar_report.csv || echo 'CSV is empty'
                 """
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
                 echo "SonarQube report generated and archived"
