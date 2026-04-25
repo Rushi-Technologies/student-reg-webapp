@@ -44,7 +44,7 @@ pipeline {
 
                     Regards,
                     CI/CD Pipeline
-                    """''', cc: '', from: '', replyTo: '', subject: ' "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}"', to: 'devopsmanu1909@gmail.com', attachmentsPattern: 'sonar_report.csv'
+                    """''', cc: '', from: '', replyTo: '', subject: ' "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}"', to: 'devopsmanu1909@gmail.com'
                 /*emailext(
                     subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Hello Team,
