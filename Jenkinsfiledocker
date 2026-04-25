@@ -34,7 +34,18 @@ pipeline {
         }
         stage('Email Report') {
             steps {
-                emailext(
+                mail bcc: '', body: '''"""Hello Team,
+
+                     Attached is the SonarQube analysis report for build #${env.BUILD_NUMBER}.
+
+                    Key metrics:
+                    - Bugs, Vulnerabilities, Code Smells exported
+                    - Quality Gate status: ${currentBuild.result}
+
+                    Regards,
+                    CI/CD Pipeline
+                    """''', cc: '', from: '', replyTo: '', subject: ' "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}"', to: 'devopsmanu1909@gmail.com', attachmentsPattern: 'sonar_report.csv'
+                /*emailext(
                     subject: "SonarQube Report - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                     body: """Hello Team,
 
@@ -48,7 +59,7 @@ CI/CD Pipeline
 """,
                     to: 'devopsmanu1909@gmail.com',
                     attachmentsPattern: 'sonar_report.csv'
-                        )
+                        )*/
                 
             }
             
