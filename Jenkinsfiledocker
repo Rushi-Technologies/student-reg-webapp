@@ -17,7 +17,7 @@ pipeline {
             steps {
           withCredentials([string(credentialsId: 'Sonar', variable: 'Sonar')]) {
             sh """
-            mvn clean test sonar:sonar -Dsoanr.token=${Sonar}]
+            mvn clean test sonar:sonar -Dsonar.token=${Sonar}]
             """
             }
             }
