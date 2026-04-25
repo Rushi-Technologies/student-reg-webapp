@@ -92,6 +92,7 @@ CI/CD Pipeline
             agent { label 'docker' }
                 steps{
                     sh """
+                    cd /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || exit 1
                     docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
                     echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
                     """
