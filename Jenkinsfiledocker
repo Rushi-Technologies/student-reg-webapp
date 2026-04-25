@@ -16,9 +16,9 @@ pipeline {
         }
         stage('Code Quality') {
             steps {
-          withCredentials([string(credentialsId: 'Sonar_token', variable: 'Sonar')]) {
+          withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
             sh """
-            mvn test -X sonar:sonar -Dsonar.token=${Sonar}
+            mvn test -X sonar:sonar -Dsonar.token=${SONAR_TOKEN}
             """
             echo "Code quality analysis completed"
           }
