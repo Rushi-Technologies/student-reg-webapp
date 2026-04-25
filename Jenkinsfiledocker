@@ -4,10 +4,7 @@ pipeline {
         maven "Maven-3.9.15"
     }
     triggers{
-        githubpush()
-    }
-    evironments{
-        DOCKERHUB_CREDENTIALS = "123"
+        githubPush()
     }
     stages {
         stage('gitClone') {
