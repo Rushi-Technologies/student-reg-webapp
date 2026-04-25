@@ -50,8 +50,11 @@ pipeline {
             stage("Maven build tool"){
                 steps{
                     mavenaction( 'package' )
+<<<<<<< HEAD
                     echo "Branch name is: ${branchName} "
       
+=======
+>>>>>>> 14c6b0455596c2d2156d1b795c73b545ef6a494f
                 }   
             }
             stage ("parallel run "){
