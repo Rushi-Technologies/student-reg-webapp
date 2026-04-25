@@ -72,24 +72,29 @@ CI/CD Pipeline
         }
         stage("Build Docker image"){
             steps{
-                agent Docker{
-                    sshagent(['DOCKER-AGENT-SSH']) {
-                    sh """
-                    scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
-                    sleep 20
-                    docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
-                    """
+                agent {
+                    Docker{
+                        sshagent(['DOCKER-AGENT-SSH']) {
+                        sh """
+                        scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
+                        sleep 20
+                        docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
+                        """
+                        }
                     }
                 }
             }
         }
+        
         stage("containerize"){ 
             steps{
-                agent Docker{
-                    sshagent(['DOCKER-AGENT-SSH']) {
-                    sh """
-                    docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
-                    """
+                agent {
+                    Docker{
+                        sshagent(['DOCKER-AGENT-SSH']) {
+                        sh """
+                        docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
+                        """
+                        }
                     }
                 }
             }
