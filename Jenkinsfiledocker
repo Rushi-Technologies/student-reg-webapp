@@ -71,37 +71,36 @@ CI/CD Pipeline
             
         }
         stage("Build Docker image"){
-            steps{
-                agent {
+             agent {
                     Docker{
-                        sshagent(['DOCKER-AGENT-SSH']) {
-                        sh """
-                        scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
-                        sleep 20
-                        docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
-                        echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
-                        """
                         }
-                    }
-                }
+                } 
+            steps{
+                sshagent(['DOCKER-AGENT-SSH']) {
+                    sh """
+                    scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/
+                    sleep 20
+                    docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
+                    echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
+                    """
+                }  
             }
         }
         
-        stage("containerize"){ 
+        stage("containerize"){
+            agent {
+                Docker{ 
+                } 
+            }          
             steps{
-                agent {
-                    Docker{
-                        sshagent(['DOCKER-AGENT-SSH']) {
-                        sh """
-                        docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
-                        echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
-                        
-                        """
-                        }
-                    }
+                shagent(['DOCKER-AGENT-SSH']) {
+                    sh """
+                    docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
+                    echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
+
+                    """
                 }
             }
-        
         }
     }
 }
