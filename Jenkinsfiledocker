@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        maven "Maven-3.9.15"
+      maven 'Maven-3.9.15'
     }
     triggers{
         githubPush()
@@ -10,7 +10,7 @@ pipeline {
         stage('mvn build') {
             steps {
                 // Get some code from a GitHub repository 
-                mvn 'clean package'
+               sh" mvn 'clean package' "
             }
 
         }
