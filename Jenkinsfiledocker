@@ -11,6 +11,7 @@ pipeline {
             steps {
                 // Get some code from a GitHub repository 
                sh" mvn clean package "
+               echo "mvn build successful"
             }
         }
         stage('Code Quality') {
@@ -19,6 +20,7 @@ pipeline {
             sh """
             mvn test -X sonar:sonar -Dsonar.token=${Sonar}
             """
+            echo "Code quality analysis completed"
           }
             }
         }
@@ -31,6 +33,7 @@ pipeline {
                 | jq -r '.issues[] | [.key, .type, .severity, .message] | @csv' > sudo sonar_report.csv
                 """
                 archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
+                echo "SonarQube report generated and archived"
                 }
             }
         }
