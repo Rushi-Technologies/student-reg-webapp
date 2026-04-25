@@ -7,6 +7,7 @@ pipeline {
         githubpush()
     }
     evironments{
+        DOCKERHUB_CREDENTIALS = "123"
     }
     stages {
         stage('gitClone') {
