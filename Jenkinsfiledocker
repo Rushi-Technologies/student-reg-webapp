@@ -10,7 +10,7 @@ pipeline {
         stage('mvn build') {
             steps {
                 // Get some code from a GitHub repository 
-               sh" mvn 'clean package' "
+               sh" mvn clean package "
             }
 
         }
