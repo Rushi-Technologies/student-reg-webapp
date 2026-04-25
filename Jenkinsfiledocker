@@ -103,7 +103,7 @@ CI/CD Pipeline
                 steps{
                     shagent(['DOCKER-AGENT-SSH']) {
                         sh """
-                        docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
+                        docker run -d -p 8081:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
                         echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
                         """
                     }
