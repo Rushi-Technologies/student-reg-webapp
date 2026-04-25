@@ -18,15 +18,16 @@ pipeline {
                 echo "mvn build successful"
                 }
             }
-            stage('Code Quality') {
+        stage('Code Quality') {
+            agent { label 'Maven' }
                 steps {
-            withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
-                sh """
-                mvn test sonar:sonar -Dsonar.token=${SONAR_TOKEN}
-                """
-                echo "Code quality analysis completed"
-            }
+                    withCredentials([string(credentialsId: 'Sonar_token', variable: 'SONAR_TOKEN')]) {
+                        sh """
+                        mvn test sonar:sonar -Dsonar.token=${SONAR_TOKEN}
+                        """
+                        echo "Code quality analysis completed"
                 }
+            }
         }
         stage('Generate Report') {
             agent { label 'Maven' }
@@ -49,7 +50,7 @@ pipeline {
                         archiveArtifacts artifacts: 'sonar_report.csv', fingerprint: true
                         echo "SonarQube report generated and archived"
                     }
-            }
+                }
         }
         stage('Email Report') {
             agent { label 'Maven' }
@@ -70,7 +71,7 @@ CI/CD Pipeline
                     attachmentsPattern: '*.csv'
                      )
                 
-            }
+                }
             
         }
         stage("Build Docker image"){
@@ -84,19 +85,18 @@ CI/CD Pipeline
                         echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
                         """
                     }  
-            }
+                }
         }
-        
         stage("containerize"){
             agent { label 'docker' }        
-            steps{
-                shagent(['DOCKER-AGENT-SSH']) {
-                    sh """
-                    docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
-                    echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
+                steps{
+                    shagent(['DOCKER-AGENT-SSH']) {
+                        sh """
+                        docker run -d -p 8080:8080 --name ${env.JOB_NAME}_${env.BUILD_NUMBER} ${env.JOB_NAME}:${env.BUILD_NUMBER}
+                        echo "Docker container ${env.JOB_NAME}_${env.BUILD_NUMBER} started successfully on port 8080"
 
-                    """
-                }
+                        """
+                    }
             }
         }
     }
