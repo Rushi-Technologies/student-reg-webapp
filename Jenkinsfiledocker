@@ -81,7 +81,7 @@ CI/CD Pipeline
                         sh """
                         ssh -o StrictHostKeyChecking=no ec2-user@${Docker_Host} "mkdir -p /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}" || echo "Directory creation failed, but continuing..."
 
-                        scp -o StrictHostKeyChecking=no target/student-reg-webapp ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || echo "File transfer failed, but continuing..."
+                        scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/docker_pipelineo ec2-user@${Docker_Host}:/home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || echo "File transfer failed, but continuing..."
                         sleep 20
                         echo "Jar file copied successfully to Docker host"
                         """
@@ -92,7 +92,7 @@ CI/CD Pipeline
             agent { label 'docker' }
                 steps{
                     sh """
-                    cd /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}/student-reg-webapp || exit 1
+                    cd /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER}/docker_pipelineo || exit 1
                     docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
                     echo "Docker image ${env.JOB_NAME}:${env.BUILD_NUMBER} built successfully"
                     """
