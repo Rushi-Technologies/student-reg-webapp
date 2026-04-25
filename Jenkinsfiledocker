@@ -92,7 +92,7 @@ CI/CD Pipeline
             agent { label 'docker' }
                 steps{
                     sh """
-                    cd /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} || exit 1
+                    cd /home/ec2-user/JenkinsDocker/${env.JOB_NAME}_${env.BUILD_NUMBER} 
                     mkdir -p project
                     cp -r * project/ || echo "File copy to project directory failed, but continuing..."
                     docker build -t ${env.JOB_NAME}:${env.BUILD_NUMBER} .
