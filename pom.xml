@@ -24,11 +24,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp/</url>
+			<url>http://3.82.104.244:8081/repository/rushitech-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp-snapshot/</url>
+			<url>http://3.82.104.244:8081/repository/rushitech-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
