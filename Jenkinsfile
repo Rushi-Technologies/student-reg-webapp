@@ -1,7 +1,15 @@
 pipeline {
     
-    agent any
-    
+   agent any
+   options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+       githubPush()
+    }
+
     environment{
         SONARQUBE_TOkEN = credentials('SonarQubeToken')
         SONAR_QUBE_URL = "http://172.31.44.188:9000/"
@@ -14,11 +22,6 @@ pipeline {
     }
     
     stages{
-        stage("Git Clone"){
-            steps{
-                git branch: 'development', credentialsId: 'GitHub_Credentials', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
-            }
-        }
         
         stage("Maven Build") {
             steps {
