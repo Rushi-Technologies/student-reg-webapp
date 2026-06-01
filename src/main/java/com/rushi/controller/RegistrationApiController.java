@@ -15,13 +15,13 @@ public class RegistrationApiController {
 
    
     private static final Logger logger = LoggerFactory.getLogger(RegistrationApiController.class);
-   
+    
     /**
-     * Endpoint to fetch all registrations.
-     * This method retrieves the list of registrations from the HomeController.
-     *
-     * @return List of RegistrationForm objects
-     */
+    * Endpoint to fetch all registrations.
+    * This method retrieves the list of registrations from the HomeController.
+    *
+    * @return List of RegistrationForm objects
+    */
 
     @GetMapping("/api/registrations")
     public List<HomeController.RegistrationForm> getRegistrations() {
