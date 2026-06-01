@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -90,15 +91,6 @@ public class HomeController {
     }
 
     private List<String> getCourses() {
-        List<String> courses = new ArrayList<>();
-        courses.add("DevOps");
-        courses.add("AWS");
-        courses.add("Azure Admin With Azure DevOps");
-        courses.add("Terraform");
-        courses.add("K8s");
-        courses.add("Python");
-        courses.add("Java");
-        courses.add("Full Stack Development");
-        return courses;
+        return Arrays.asList("DevOps", "AWS", "Azure Admin With Azure DevOps", "Terraform", "K8s","Python");
     }
 }
