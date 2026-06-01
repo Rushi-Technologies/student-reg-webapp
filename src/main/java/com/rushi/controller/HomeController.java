@@ -87,7 +87,7 @@ public class HomeController {
         model.addAttribute("course", form.getCourse());
         REGISTRATIONS.add(form);
         logger.info("Registration successful for: {}", form.getName());
-        return "success"
+        return "success";
     }
 
     private List<String> getCourses() {
