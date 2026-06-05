@@ -68,7 +68,7 @@ pipeline {
         }
 
                 
-        stage("Deploy To Dev Environment") {
+        stage("Deploy To Prod Environment") {
             when {
                 expression { env.BRANCH_NAME == 'main' }
             }
