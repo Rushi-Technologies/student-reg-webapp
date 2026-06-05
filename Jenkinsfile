@@ -51,7 +51,8 @@ pipeline {
             }
         }
         
-        stage("Deploy To Tomcat"){
+        stage("Deploy To Dev Environment") {
+            when expression { env.BRANCH_NAME == 'development' || env.BRANCH_NAME == 'feature' }
             steps {
                 sshagent(['TomcatServer_SSH_Credentails']) {
                    sh """ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo systemctl stop tomcat
@@ -61,6 +62,17 @@ pipeline {
                       scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP}:/opt/tomcat/webapps/student-reg-webapp.war
                       ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo systemctl start tomcat"""
                  }
+            }
+        }
+
+                
+        stage("Deploy To Dev Environment") {
+            when {
+                expression { env.BRANCH_NAME == 'main' }
+            }
+            steps {
+            // Similar deployment steps for production environment, adjust as needed
+               echo "Deploying to production environment..."
             }
         }
         
