@@ -52,7 +52,9 @@ pipeline {
         }
         
         stage("Deploy To Dev Environment") {
-            when expression { env.BRANCH_NAME == 'development' || env.BRANCH_NAME == 'feature' }
+            when {
+                expression { env.BRANCH_NAME == 'development' || env.BRANCH_NAME == 'feature' }
+            }
             steps {
                 sshagent(['TomcatServer_SSH_Credentails']) {
                    sh """ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo systemctl stop tomcat
