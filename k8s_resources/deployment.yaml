@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: studentregweabapp
-        image: 559056419894.dkr.ecr.ap-south-1.amazonaws.com/student-reg-webapp:21
+        image: 559056419894.dkr.ecr.ap-south-1.amazonaws.com/student-reg-webapp:IMAGE_TAG
         ports:
         - containerPort: 8080
         resources:
