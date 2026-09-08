@@ -6,14 +6,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.rushi</groupId>
 	<artifactId>student-reg-webapp</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>6.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
 		<java.version>11</java.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<sonar.host.url>http://172.31.6.94:9000/</sonar.host.url>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<sonar.host.url>http://172.31.39.113:9000/</sonar.host.url>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.sources>src/main/java</sonar.sources>
 		<!-- <sonar.tests>src/test/java</sonar.tests> -->
@@ -21,17 +21,16 @@
 		<sonar.exclusions>**/*.css</sonar.exclusions>
 	</properties>
 
-    <distributionManagement>
+       <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp/</url>
+			<url>http://172.31.8.219:8081/repository/student-reg-app-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp-snapshot/</url>
+			<url>http://172.31.8.219:8081/repository/student-reg-app-snap/</url>
 		</snapshotRepository>
     </distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
