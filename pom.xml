@@ -24,11 +24,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp/</url>
+			<url>http://172.31.40.211:8081/repository/abi-release/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://172.31.4.126:8081/repository/student-reg-webapp-snapshot/</url>
+			<url>http://172.31.40.211:8081/repository/abi-snapshot/</url>
 		</snapshotRepository>
     </distributionManagement>
 
