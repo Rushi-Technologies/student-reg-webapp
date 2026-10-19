@@ -8,6 +8,10 @@ pipeline {
             environment {
                 maven = tool name: 'Maven', type: 'maven'
             }
+            input {
+              message 'Proceed with deployment?'
+              ok 'yes'
+            }
             steps{
                sh "${maven}/bin/mvn clean package"
             }
