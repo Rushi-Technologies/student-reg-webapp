@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    options {
+      buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '1')
+    }
     stages {
         stage ("maven build") {
             environment {
