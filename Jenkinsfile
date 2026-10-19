@@ -4,7 +4,7 @@ pipeline {
       buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '1')
     }
     stages {
-        stage ("maven build") {
+        stage ("maaven build") {
             environment {
                 maven = tool name: 'Maven', type: 'maven'
             }
