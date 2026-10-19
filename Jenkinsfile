@@ -1,11 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage ("git clone") {
-            steps{
-               git branch: 'main', credentialsId: '0c28846d-59bf-4bec-b496-5c5800cb2bfa', url: 'https://github.com/AbinayaBalaji23/Jenkins.git' 
-            }
-        }
         stage ("maven build") {
             environment {
                 maven = tool name: 'Maven', type: 'maven'
