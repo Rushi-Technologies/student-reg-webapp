@@ -16,7 +16,6 @@ pipeline {
                sh "${maven}/bin/mvn clean package"
             }
         }
-        #scan
         stage ("Sonar Scanner") {
             environment {
                 sonar = tool name: 'Sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
