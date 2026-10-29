@@ -91,6 +91,6 @@ public class HomeController {
     }
 
     private List<String> getCourses() {
-        return Arrays.asList("Java", "Python", "JavaScript","Ruby","Go","PHP","C#","C++","Swift","Kotlin")
+        return Arrays.asList("Java", "Python", "JavaScript","Ruby","Go","PHP","C#","C++","Swift","Kotlin");
     }
 }
