@@ -4,12 +4,12 @@ pipeline {
       githubPush()
 }
  tools {
-    maven "Maven-3.9.16"
+    maven "Maven-3.10.1"
  }
   environment {
         AWS_REGION = "ap-south-1"
         IMAGE_REGISTRY_ENDPOINT = "559056419894.dkr.ecr.ap-south-1.amazonaws.com"
-        IMAGE_REPOSITORY_NAME = "student-reg-webapp"
+        IMAGE_REPOSITORY_NAME = "student-reg-webappp"
         IMAGE_REGISTRY = "${IMAGE_REGISTRY_ENDPOINT}/${IMAGE_REPOSITORY_NAME}"
         TRIVY_CACHE_DIR = "${WORKSPACE}/.trivycache"
         TMPDIR = "${WORKSPACE}/.trivytmp"
