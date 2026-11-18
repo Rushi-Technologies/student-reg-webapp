@@ -1,10 +1,12 @@
-
-properties([buildDiscarder(logRotator(numToKeepStr: '5')), disableConcurrentBuilds(), pipelineTriggers([githubPush()])])
 node {
   
   def mavenHome = tool name: 'Maven-3.10', type: 'maven'
   def tomcatserverSSHUserName = "ec2-user"
   def tomcatSystemIP = "172.31.2.59"
+
+  properties([buildDiscarder(logRotator(numToKeepStr: '5')), disableConcurrentBuilds(), pipelineTriggers([githubPush()])])
+
+
   try {
     
     
