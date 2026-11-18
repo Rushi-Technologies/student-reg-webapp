@@ -1,52 +1,57 @@
-properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '10')), disableConcurrentBuilds(), pipelineTriggers([githubPush()])])
-node{
-    
-  try {
 
-    def mavenHomeDir = tool name: "Maven-3.9.16", type: 'maven'
-    def sonarQubeURL= "http://172.31.44.188:9000"
+properties([buildDiscarder(logRotator(numToKeepStr: '5')), disableConcurrentBuilds(), pipelineTriggers([githubPush()])])
+node {
+  
+  def mavenHome = tool name: 'Maven-3.10', type: 'maven'
+  def tomcatserverSSHUserName = "ec2-user"
+  def tomcatSystemIP = "172.31.2.59"
+  try {
     
-    stage("Git Clone"){
-      git branch: 'development', credentialsId: 'GitHub_Credentials', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
+    
+     stage("Run Unit Tests") {
+        sh "${mavenHome}/bin/mvn clean test"
     }
     
-    stage("Maven Build"){
-        sh "${mavenHomeDir}/bin/mvn clean package"
+    stage("Maven Build") {
+        sh "${mavenHome}/bin/mvn clean package"
     }
     
-    stage("Sonar Scan"){
-       withSonarQubeEnv('SonarQubeServer'){
-            sh "${mavenHomeDir}/bin/mvn clean package sonar:sonar"
+    stage("SonarScan") {
+       withSonarQubeEnv('SonarQubeServer') {
+           sh "${mavenHome}/bin/mvn sonar:sonar"
+        } 
+    }
+    
+   stage("Quality Gate"){
+     timeout(time: 10, unit: 'MINUTES') { // Just in case something goes wrong, pipeline will be killed after a timeout
+       def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+       if (qg.status != 'OK') {
+        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+      }
+     }
+   }    
+    stage("Upload Artifact") {
+         sh "${mavenHome}/bin/mvn clean deploy"
+    }
+    
+     stage("Deploy  Tomcat") {
+       sshagent(credentials: ['Tomcat_Server_SSH_Cred'], executable: '') {
+                 sh """
+                    ssh -o StrictHostKeyChecking=no ${tomcatserverSSHUserName}@${tomcatSystemIP} sudo systemctl stop tomcat
+                    sleep 20
+                    ssh -o StrictHostKeyChecking=no ${tomcatserverSSHUserName}@${tomcatSystemIP} rm /opt/tomcat/webapps/student-reg-webapp.war
+                    scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${tomcatserverSSHUserName}@${tomcatSystemIP}:/opt/tomcat/webapps/student-reg-webapp.war
+                    ssh -o StrictHostKeyChecking=no ${tomcatserverSSHUserName}@${tomcatSystemIP} sudo systemctl start tomcat
+                """
         }
     }
     
-     stage("Quality Gate"){
-          timeout(time: 1, unit: 'HOURS') {
-              def qg = waitForQualityGate()
-              if (qg.status != 'OK') {
-                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
-              }
-          }
-      }
-      
-      stage("Upload to Nexus Repository"){
-          sh "${mavenHomeDir}/bin/mvn clean deploy"
-      }   
-    
-      stage("Deploy to Tomcat"){
-         deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'Tomcat_Credentails', path: '', url: 'http://172.31.38.49:8080')], contextPath: null, war: 'target/student-reg-webapp*.war'
-      }
-  }catch(Exception e){
-    currentBuild.result = 'FAILURE'
-  }finally {
-    def buildStatus = currentBuild.result ?: 'SUCCESS'
-    sendEmail(buildStatus)
-  }
-}
-
-def sendEmail(String buildStatus){
-    emailext body:  """
-                    <html>
+  } catch(Exception e){
+       currentBuild.result = 'FAILURE'
+       throw e
+  } finally {
+      def buildStatus = currentBuild.result ?: 'SUCCESS'
+      emailext body: """ <html>
                     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                         <h2 style="color: #2d87f0;">Jenkins Build Notification</h2>
                         <p><strong>Build Result:</strong> ${buildStatus}</p>
@@ -55,9 +60,6 @@ def sendEmail(String buildStatus){
                         <p><strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                         <p>For more details, please visit the Jenkins job page.</p>
                     </body>
-                    </html>
-                    """, 
-        subject: "${env.JOB_NAME} - ${env.BUILD_NUMBER} - ${buildStatus}", 
-        to: 'balajireddy.urs@gmail.com,rushitechnologiesbanglore@gmail.com',
-        mimeType: 'text/html'
+                    </html>""", mimeType: 'text/html', subject: "${env.JOB_NAME} - ${env.BUILD_NUMBER} - Build ${currentBuild.currentResult}", to: 'balajireddy.urs@gmail.com,rushitechnologiesbanglore@gmail.com'
+  } 
 }
