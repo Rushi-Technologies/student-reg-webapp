@@ -9,6 +9,14 @@ node {
 
   try {
     
+    stage("Checkout Code") {
+        // This works if u have choosed "Pipeline script from SCM" option in Jenkins job configuration
+        checkout scm
+        
+        // This works if u have choosed "Pipeline script" option in Jenkins job configuration
+        // git branch: 'development', credentialsId: 'GitHubCredentials', url: 'https://github.com/Rushi-Technologies/student-reg-webapp.git'
+
+    }
     
      stage("Run Unit Tests") {
         sh "${mavenHome}/bin/mvn clean test"
