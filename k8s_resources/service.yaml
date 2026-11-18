@@ -5,7 +5,7 @@ metadata:
   namespace: test-ns
 spec:
   selector:
-    app: studentregweabapp
+    app: student-reg-webapp
   ports:
   - port: 80
     targetPort: 8080
