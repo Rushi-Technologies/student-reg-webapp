@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sutdent-reg-webapp
+  name: student-reg-webapp
   namespace: test-ns
 spec:
   selector:
     matchLabels:
-      app: studentregweabapp
+      app: student-reg-webapp
   template:
     metadata:
       labels:
-        app: studentregweabapp
+        app: student-reg-webapp
     spec:
       containers:
-      - name: studentregweabapp
+      - name: student-reg-webapp
         image: 559056419894.dkr.ecr.ap-south-1.amazonaws.com/student-reg-webappp:IMAGE_TAG
         ports:
         - containerPort: 8080

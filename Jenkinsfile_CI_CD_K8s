@@ -99,13 +99,12 @@ pipeline {
                  """
              }
          }
-
-         post {
-             always {
-                cleanWs()
-                sh "docker system prune -af"
-             }
-         }
-       
   }
+
+    post {
+         always {
+            cleanWs()
+            sh "docker system prune -af"
+        }
+    }
 }
