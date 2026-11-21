@@ -11,7 +11,7 @@ pipeline {
     }
 
     environment{
-        TOMCAT_SERVERIP = "172.31.2.59
+        TOMCAT_SERVERIP = "172.31.2.59"
         TOMCAT_SERVER_SSH_USER = "ec2-user"
     }
     
