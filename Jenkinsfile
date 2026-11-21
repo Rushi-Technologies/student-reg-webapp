@@ -11,14 +11,12 @@ pipeline {
     }
 
     environment{
-        SONARQUBE_TOkEN = credentials('SonarQubeToken')
-        SONAR_QUBE_URL = "http://172.31.44.188:9000/"
-        TOMCAT_SERVERIP = "172.31.38.49"
+        TOMCAT_SERVERIP = "172.31.2.59
         TOMCAT_SERVER_SSH_USER = "ec2-user"
     }
     
     tools {
-         maven 'Maven-3.9.16'
+         maven 'Maven-3.10'
     }
     
     stages{
@@ -52,11 +50,9 @@ pipeline {
         }
         
         stage("Deploy To Dev Environment") {
-            when {
-                expression { env.BRANCH_NAME == 'development' || env.BRANCH_NAME == 'feature' }
-            }
+            
             steps {
-                sshagent(['TomcatServer_SSH_Credentails']) {
+                sshagent(['Tomcat_Server_SSH_Cred']) {
                    sh """ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo systemctl stop tomcat
                       ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo rm /opt/tomcat/webapps/student-reg-webapp*.war || true
                       ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo rm -rf /opt/tomcat/webapps/student-reg-webapp || true
@@ -64,17 +60,6 @@ pipeline {
                       scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP}:/opt/tomcat/webapps/student-reg-webapp.war
                       ssh -o StrictHostKeyChecking=no ${TOMCAT_SERVER_SSH_USER}@${TOMCAT_SERVERIP} sudo systemctl start tomcat"""
                  }
-            }
-        }
-
-                
-        stage("Deploy To Prod Environment") {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-            }
-            steps {
-            // Similar deployment steps for production environment, adjust as needed
-               echo "Deploying to production environment..."
             }
         }
         
