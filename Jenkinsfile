@@ -67,7 +67,7 @@ pipeline {
 
         stage("Deploy To Prod Environment") {
             when {
-                expression { branch == 'main' }
+                branch 'main'
             }
             steps {
               echo "Deploying to Production Environment"
